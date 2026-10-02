@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 5: Language Policy and Planning</title>
+<style>
+:root{--ink:#14232e;--mute:#55697a;--bg:#eaf0f4;--ac:#0b5ea8;--ok:#1e7d4f;--bad:#b3261e;--line:#cfdbe4}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:90px}
+header{background:var(--ink);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+h1{font:700 1.15rem/1.25 Georgia,serif;margin:0}
+h2{font:700 1.25rem Georgia,serif;margin:0 0 4px}
+.chip{font-size:.8rem;padding:4px 10px;border-radius:99px;background:#ffffff26;white-space:nowrap}
+main{max-width:860px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.mute{color:var(--mute);margin:0}
+label.f,.q{display:block;font-weight:600;margin:16px 0 6px}
+input[type=text],input[type=email],textarea,select{width:100%;font:inherit;padding:11px 12px;border:1.5px solid #9fb2c1;border-radius:8px;background:#fff;color:inherit}
+textarea{min-height:88px;resize:vertical}
+:focus-visible{outline:3px solid #f2a900;outline-offset:1px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch}
+nav button{flex:0 0 auto;font:inherit;font-size:.9rem;padding:9px 12px;border:1.5px solid #9fb2c1;border-radius:8px;background:#fff;color:var(--ink);cursor:pointer;min-height:44px}
+nav button[aria-current=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+nav small{opacity:.7}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{position:relative;flex:1 1 130px}
+.seg input{position:absolute;opacity:0;inset:0}
+.seg span{display:block;text-align:center;padding:11px 8px;border:1.5px solid #9fb2c1;border-radius:8px;min-height:44px;cursor:pointer}
+.seg input:checked+span{background:var(--ac);border-color:var(--ac);color:#fff}
+.seg input:focus-visible+span{outline:3px solid #f2a900}
+.row{display:flex;gap:10px}
+button.b{font:inherit;font-weight:600;padding:12px 18px;border-radius:8px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;min-height:48px;flex:1}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center;z-index:6}
+.bar button{max-width:280px}
+.ov{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:16px;z-index:20}
+.dlg{background:#fff;border-radius:12px;padding:20px;max-width:440px;width:100%}
+.ban{background:#e3f4ea;border:1px solid var(--ok);color:#12522f;padding:12px 14px;border-radius:8px;margin-bottom:14px;font-weight:600}
+.err{color:var(--bad);font-weight:600;min-height:1.4em}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:100px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;z-index:30;max-width:90%}
+table{border-collapse:collapse;width:100%;font-size:.95rem}th,td{border:1px solid var(--line);padding:8px;vertical-align:top;text-align:left}th{width:28%;background:#f2f6f9}summary{min-height:32px}
+@media(min-width:900px){body{font-size:18px}}
+@media(prefers-reduced-motion:no-preference){nav button{transition:background .15s}}
+</style>
+</head>
+<body>
+<header><h1>Week 5: National Languages, Language Policy and Planning</h1><span class="chip" id="st">Not started</span></header>
+<main>
+<section class="card" id="gate">
+  <h2>Join the activities</h2>
+  <p class="mute">Use the same name and email every time. If you refresh or close this page, enter them again to get your work back.</p>
+  <label class="f" for="nm">Full name</label><input type="text" id="nm" list="ros" autocomplete="off" placeholder="Pick your name from the list"><datalist id="ros"></datalist>
+  <label class="f" for="em">Email (your answers will be sent here)</label><input type="text" id="em" autocomplete="off" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="Type your own email">
+  <label class="f" for="gr">Your group</label><select id="gr"></select>
+  <p class="err" id="err" role="alert"></p>
+  <button class="b p" id="go" style="width:100%">Start or continue</button>
+</section>
+<div id="app" hidden>
+  <p class="mute" id="who" style="margin-bottom:8px;font-weight:600"></p>
+  <div class="ban" id="ban" hidden></div>
+  <nav id="nav" aria-label="Activities"></nav>
+  <div id="panels"></div>
+  <div class="row"><button class="b" id="pv">Back</button><button class="b" id="nx">Next</button></div>
+</div>
+</main>
+<div class="bar" id="bar" hidden><button class="b" id="sv">Save work</button><button class="b p" id="sub">Submit</button></div>
+<div class="ov" id="m" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mh">
+  <h2 id="mh">Submit your work?</h2><p id="mt"></p>
+  <div class="row"><button class="b" id="no">No, keep editing</button><button class="b p" id="yes">Yes, submit</button></div>
+</div></div>
+<div id="toast" hidden></div>
+<script>
+// ====== PASTE YOUR APPS SCRIPT WEB APP URL (ends with /exec) ======
+const API='https://script.google.com/macros/s/AKfycbx6kfDYQfKZowHMslHiev96IJeD_ZjExBxNpcx-ZVm97jsCfbBn9nB_989TZR2WnxgA/exec';
+
+const CASES={A:'Tanzania (Swahili)',B:'Norway (Bokmål and Nynorsk)',C:'Israel (Hebrew)',D:'Indonesia (Bahasa Indonesia)',E:'Philippines (Filipino)'};
+// Class roster with group assignment (edit a letter here to move a student).
+const ROSTER={"JENNIFER CHEZYARIKA M. LODONG":"A","ERIKA I.S.":"A","ALDRIANO FERDINAND MARANY":"C","RAHEL RIBHOY YOKU":"A","SURYANI LUKITA GUSTINI HILI":"B","LUBIYANI TIIYO":"B","JULLIO RUDOLFO ARWAM":"B","TESALONIKA TAMBA":"B","SERLINA RADA METTI":"C","VIRGINIA SYALOMITHA MARYAM MANOARFA SITINDAON":"C","MICHELLE CAESARANI":"C","PAULIN E. KAKA JALA PADI":"A","ABIGAIL NADINE PUTRI RIANTO":"D","WINONA RUTH RENTAMA":"D","IMELDA THERESIA SINAGA":"D","HERLINDA RAMBU ATAHUMBA LANDUTANA":"D","SAMUEL DWI CAHYO JAYA":"E","CHICHA MARIA":"E","HESTIA SAPUTRI RAMBU PEDA JATI":"E","DEDIFIS BERKAT ZENDRATO":"E"};
+const SIDE={A:'Pro',B:'Pro',C:'Con',D:'Con',E:'Panel'};
+const ST=['1 Selection','2 Codification','3 Elaboration','4 Acceptance'];
+const NOB=['Mainly national','Both','Mainly official'];
+const WHO=['Politicians','Linguists','People'];
+const f=(k,l,t,o,key)=>({k,l,t,o,key});
+const NS=[['Guaraní in Paraguay today','Both: national, and official since 1992'],['French in the Ivory Coast or Chad','Mainly official (former colonial language)'],['Swahili in Tanzania','Both (English is also official)'],['Hebrew in Israel','Both (Arabic is also official)'],['English in the USA','Not legally official at national level; used in practice (de facto)']];
+const MS=[['The government publishes a dictionary and spelling rules','2 Codification'],['A president translates Shakespeare into the language and uses it in speeches','4 Acceptance'],['The language gets new words for technology and law','3 Elaboration']];
+const PQ=['Where was it taken?','Which languages appear?','Which language is first, and which is larger?','Top-down, bottom-up or in between? Why?','What does it suggest about policy, prestige or globalisation?','Does it match official policy or actual practice?'];
+const PC=['Uses specific evidence from the cases','Answers the other side’s best point','Clear, organised, respectful speaking','Everyone on the team contributes'];
+const S=[
+{t:'Warm-up',d:'Talk with your partner for 4 minutes, then write your own answers below. Everyone writes and submits their own work.',f:[
+ f('home','Which languages do you use at home?','t'),f('sch','…at school?','t'),f('com','…at church or in the community?','t'),f('soc','…on social media?','t'),
+ f('who','Who decided which language is used where?','a'),
+ f('why','Why is Indonesian the national language and not the language of the biggest ethnic group? Guesses are welcome.','a')]},
+{t:'National or official?',d:'For each statement, choose national, both or official, and write one reason. Use your Concept Sheet notes.',f:NS.flatMap((n,i)=>[f('n'+i,n[0],'r',NOB,n[1]),f('nr'+i,'Why?','t')])},
+{t:'Four steps check',d:'For each scenario, choose the stage of language planning it shows.',f:MS.map((m,i)=>f('m'+i,m[0],'s',ST,m[1]))},
+{t:'Case study',d:'1) Read your case card below. 2) Discuss it with your group, then fill in the sheet yourself from your notes: what happened and who decided at each of the four stages. 3) Write one tension, your answer to discussion question 1 and a one-sentence takeaway. 4) Gallery walk: read another group’s card and write one sticky note, either a question or a similarity.',f:[
+ ...ST.flatMap((s,i)=>[f('c'+i,s+': what happened (short)','a'),f('cw'+i,s+': who decided?','s',WHO)]),
+ f('ten','One tension or controversy','a'),f('q1','Answer to discussion question 1','a'),f('take','Our takeaway in one sentence','a'),
+ f('gv','Gallery walk: which group’s case did you visit?','s',Object.entries(CASES).map(([k,v])=>'Group '+k+': '+v)),
+ f('gt','Your sticky note is a…','s',['Question','Similarity']),f('gn','Sticky note text','a')]},
+{t:'Photo analysis',d:'For each of two photos: 1) upload the picture (take your own, use a groupmate’s, or one of the projected backups). 2) Answer the six questions. Discuss with your group, but write your own answers.',f:[1,2].flatMap(p=>[f('ph'+p,'Photo '+p+': upload a picture of a public sign (take one with your camera or choose from your gallery)','u'),...PQ.map((q,i)=>f('p'+p+'_'+i,'Photo '+p+': '+q,i<1?'t':'a'))])},
+{t:'Debate',d:'Motion: “English should be the global lingua franca.” Pro = Groups A and B. Con = Groups C and D. Panel = Group E. Sides are assigned, whatever you think. Prepare with your team, then write your own notes: three arguments with evidence from the cases and a 30-second closing line. Panel: fill in the score fields during the debate and judge the use of evidence, not your own opinion.',f:[
+ f('side','Your side','r',['Pro','Con','Panel']),
+ ...[1,2,3].map(i=>f('arg'+i,'Argument '+i+' with evidence (name a country or example)','a')),
+ f('close','Your 30-second closing line','t'),
+ ...PC.flatMap((c,i)=>[f('pp'+i,'Panel only, Pro score (1 to 3): '+c,'s',['1','2','3']),f('pc'+i,'Panel only, Con score (1 to 3): '+c,'s',['1','2','3'])]),
+ f('win','Panel only: winning team','s',['Pro','Con']),f('wr','Panel only: one reason','t')]},
+{t:'Exit ticket',d:'Exit ticket now. The Reflection Log is due within 48 hours: save now and finish later with the same name and email.',f:[
+ ...[1,2,3,4].map(i=>f('e'+i,'Step '+i+' of language planning','t')),
+ f('eq','One policy question you still have','a'),
+ f('r1','Reflection: key idea in your own words','a'),f('r2','Reflection: one real-world or English-teaching example','a'),
+ f('r3','Reflection: link to a previous week','a'),f('r4','Reflection: confidence score','r',['1','2','3','4','5'])]}
+];
+const CARDS={"A": {"o": "A country with over 100 local languages chose a neutral, already widespread African lingua franca as its national language.", "r": ["Independence in 1961. Over 100 local languages, each linked to a tribe. Choosing one would cause conflict. Choosing English seemed wrong for a new nation.", "President Nyerere chose Swahili. Reasons: already a lingua franca; already the language of primary school; a Bantu language, so clearly African; it had united people in the fight for independence.", "Began under the British in the 1920s. A southern variety from Zanzibar became the base. Work: standard spelling, grammar description, a dictionary.", "Used more and more in education, administration, politics and law. New words came from borrowing freely from Arabic and English.", "Nyerere’s prestige and use of Swahili in speeches and writing; he translated two Shakespeare plays. People felt loyalty to the language that united them for freedom (uhuru). It is not tied to one tribe."], "t": "In 1984 the government decided not to use Swahili for secondary and tertiary education. English is still used there.", "q": ["Who made the key decision at each stage: politicians, linguists or people?", "Why was “neutral” important in the success of Swahili?", "Should secondary schools use Swahili or English? Give one reason each way."]}, "B": {"o": "After independence from Denmark, Norway developed two competing written standards, and ordinary people favoured one.", "r": ["Norway became independent in 1814 after about four centuries of Danish rule. Danish was the high-status (H) language; Norwegian dialects were low-status (L). There was no Norwegian standard.", "Two routes: (a) adapt Danish with Norwegian features, which became Bokmål; (b) build a new standard from rural dialects, called Landsmål and later Nynorsk.", "Ivar Aasen, a teacher, wrote a grammar and a 40,000-word dictionary for the dialect-based variety. He chose forms least influenced by Danish.", "New words for ideas that had only been discussed in Danish were created from dialect forms.", "Nationalists welcomed Nynorsk, but many educated city people thought it rustic. In 1885 it was voted equal with Danish. In 1944 it was the main language of instruction for 34.1% of schoolchildren; by 2008 only 13.4%. Bokmål feels urban and sophisticated."], "t": "Government efforts to merge the two (Samnorsk) lost support. People “vote with their tongues” and Bokmål keeps winning.", "q": ["Which step went well and which step failed?", "Why did attitudes matter more than the dictionary?", "Can a government force acceptance? Explain."]}, "C": {"o": "Planners had to revive an ancient written language so that it could be used for everyday speech.", "r": ["The opposite of Tanzania’s task: Hebrew was an old written, religious and literary language, not a daily spoken language.", "Hebrew was chosen rather than Yiddish. The choice was political: the language had to be a Jewish symbol, and Yiddish had low prestige and, for many, unwanted associations. Hebrew was official in 1922 in British-ruled Palestine and in 1948 in Israel.", "Easy: Hebrew already had grammars, dictionaries and spelling and pronunciation rules from classical texts. Modern Hebrew is still being codified.", "The biggest job: vocabulary for everyday conversation, drawn from literary Hebrew and the languages of immigrants. The Academy of the Hebrew Language accepts popular loanwords (for example, lipstick) and adapts them to Hebrew grammar.", "Hebrew already had great prestige and had been revived in literature. Enthusiasts in the 1880s persuaded families to raise children in Hebrew. It also served as a lingua franca among immigrants who spoke many languages."], "t": "Some felt Hebrew was too sacred for daily use. Some scholars describe modern Hebrew as a creole.", "q": ["Which step needed the most work, and why?", "Why was acceptance easier here than in Norway?", "Why would promoting Yiddish have been difficult?"]}, "D": {"o": "The government did not choose the language of the elite but developed a widely used trade language as a neutral national language.", "r": ["Many regional languages and hundreds of vernaculars. Javanese was the language of the political and social elite.", "The government did not choose Javanese. It chose a variety of Malay that was already widely used as a trade language.", "The chosen Malay variety was developed and standardised to become Indonesian.", "Indonesian was extended into government, education and public life as the national language.", "Javanese has a complex politeness system based on social status, so choosing it would have caused problems. Indonesian is a very useful neutral choice in many situations, which helped it spread."], "t": "Often seen as a successful case of choosing a neutral language to unify a diverse country. Compare with the Philippines, where the choice favoured one ethnic group.", "tl": "Why it matters", "q": ["Why is neutrality important for a national language?", "Which step did the government have to do deliberately, and which happened through use?", "How does your own experience show the roles of Indonesian and regional languages?"]}, "E": {"o": "A national language based on one ethnic group’s language was chosen, and it still has not been unanimously accepted.", "r": ["More than 100 vernacular languages. Independence in 1946.", "Pilipino, closely based on Tagalog, was declared the national language. Tagalog had about 12 million speakers, Cebuano over 10 million and Ilocano over 5 million. The choice reflected the political and economic power of speakers near the capital, Manila.", "Based on Tagalog; the name was changed to Filipino in 1987.", "Developed as the national language and an official language alongside English; used in schools.", "Renaming in 1987 was meant to help wider acceptance. Resentment about the advantage given to one ethnic group remains. Many Filipinos see the language as useful rather than strongly identifying with it. Some Filipino Australians report Tagalog in the census and others Filipino."], "t": "The choice of one group’s language gives that group advantages over speakers of other languages.", "q": ["What does this case show about the role of political power in selection?", "What would the costs be for a speaker of a minority language such as Capiznon?", "What could planners do to improve acceptance?"]}};
+function cardHTML(g,open){const c=CARDS[g],L=['Background','1. Selection','2. Codification','3. Elaboration','4. Acceptance',c.tl||'Tension'],R=[...c.r,c.t];
+  return `<details ${open?'open':''} style="margin:12px 0;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px"><summary style="font-weight:700;cursor:pointer">${open?'Your case card: ':'Gallery walk, Group '+g+': '}${E(CASES[g])}</summary><p style="font-weight:600">${E(c.o)}</p><table>${L.map((l,i)=>`<tr><th>${E(l)}</th><td>${E(R[i])}</td></tr>`).join('')}</table><p class="q">Discussion questions</p><ol>${c.q.map(x=>`<li>${E(x)}</li>`).join('')}</ol></details>`}
+let me={},D={},cur=0,locked=false,dirtyF=false,t2,tt;
+const $=s=>document.querySelector(s);
+const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const stat=s=>$('#st').textContent=s;
+function toast(s){const t=$('#toast');t.textContent=s;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,4000)}
+$('#ros').innerHTML=Object.keys(ROSTER).sort().map(n=>`<option value="${E(n)}">`).join('');
+$('#nm').addEventListener('input',e=>{const g=ROSTER[e.target.value.trim().toUpperCase().replace(/\s+/g,' ')];if(g)$('#gr').value=g});
+$('#gr').innerHTML='<option value="">Choose…</option>'+Object.entries(CASES).map(([k,v])=>`<option value="${k}">Group ${k}: ${E(v)}</option>`).join('');
+
+async function api(action,extra,ka){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},keepalive:!!ka,
+    body:JSON.stringify(Object.assign({action,name:me.name,email:me.email,group:me.g,caseName:CASES[me.g],data:D},extra||{}))});
+  return r.json();
+}
+function fld(q){const k=q.k,l=`<label class="f" for="${k}">${E(q.l)}</label>`;
+  if(q.t==='a')return l+`<textarea id="${k}" data-k="${k}"></textarea>`;
+  if(q.t==='s')return l+`<select id="${k}" data-k="${k}"><option value="">Choose…</option>${q.o.map(o=>`<option>${E(o)}</option>`).join('')}</select>`;
+  if(q.t==='u')return l+`<input type="file" id="${k}" data-u="${k}" accept="image/*"><p class="mute" id="s_${k}"></p><img id="v_${k}" alt="" hidden style="max-width:100%;max-height:260px;border-radius:8px">`;
+  if(q.t==='r')return `<div class="q">${E(q.l)}</div><div class="seg" role="radiogroup">${q.o.map(o=>`<label><input type="radio" name="${k}" value="${E(o)}"><span>${E(o)}</span></label>`).join('')}</div>`;
+  return l+`<input type="text" id="${k}" data-k="${k}" autocomplete="off">`}
+function build(){
+  $('#nav').innerHTML=S.map((s,i)=>`<button data-i="${i}">${E(s.t)} <small id="c${i}"></small></button>`).join('');
+  $('#panels').innerHTML=S.map((s,i)=>`<section class="card" id="p${i}" hidden><h2>${E(s.t)}</h2><p class="mute">${E(s.d)}</p>${s.f.map(fld).join('')}</section>`).join('');
+}
+function cards(){$('#p3 .mute').insertAdjacentHTML('afterend',[me.g,...Object.keys(CASES).filter(k=>k!==me.g)].map((k,i)=>cardHTML(k,!i)).join(''))}
+function count(){let n=0,t=0;S.forEach((s,i)=>{const a=s.f.filter(q=>(D[q.k]||'').trim()).length;n+=a;t+=s.f.length;const c=$('#c'+i);if(c)c.textContent=a+'/'+s.f.length});return[n,t]}
+function fill(){document.querySelectorAll('[data-k]').forEach(el=>el.value=D[el.dataset.k]||'');document.querySelectorAll('.seg input').forEach(r=>r.checked=r.value===D[r.name]);document.querySelectorAll('[data-u]').forEach(el=>{$('#s_'+el.dataset.u).textContent=D[el.dataset.u]?'Uploaded: '+D[el.dataset.u]:''});count()}
+function show(i){cur=i;S.forEach((_,j)=>{$('#p'+j).hidden=j!==i;$('#nav').children[j].setAttribute('aria-current',j===i)});$('#pv').disabled=i===0;$('#nx').disabled=i===S.length-1;scrollTo(0,0)}
+$('#nav').onclick=e=>{const b=e.target.closest('button');if(b)show(+b.dataset.i)};
+$('#pv').onclick=()=>show(cur-1);$('#nx').onclick=()=>show(cur+1);
+
+const lk=()=>'w5:'+me.email;
+function localSave(){try{localStorage.setItem(lk(),JSON.stringify({name:me.name,D}))}catch(_){}}
+function localLoad(){try{const o=JSON.parse(localStorage.getItem(lk()));return o&&o.name.toLowerCase()===me.name.toLowerCase()?o.D:null}catch(_){return null}}
+function dirty(){dirtyF=true;stat('Unsaved changes');localSave();clearTimeout(t2);t2=setTimeout(()=>save(),4000)}
+async function save(manual,ka){clearTimeout(t2);if(locked||!me.email)return;stat('Saving…');
+  try{const r=await api('save',null,ka);if(!r.ok)throw r.error;dirtyF=false;stat('Saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));if(manual)toast('Work saved.')}
+  catch(x){stat('Kept on this device only');if(manual)toast('Could not reach the server. Your work is kept on this device. Try again soon.')}}
+document.addEventListener('input',e=>{const el=e.target,k=el.dataset.k||(el.type==='radio'&&el.name);if(!k||locked)return;D[k]=el.value;count();dirty()});
+function shrink(file){return new Promise((ok,no)=>{const i=new Image(),u=URL.createObjectURL(file);i.onload=()=>{const s=Math.min(1,1200/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.75))};i.onerror=()=>no('that file is not an image');i.src=u})}
+document.addEventListener('change',async e=>{const el=e.target,k=el.dataset.u;if(!k||locked||!el.files[0])return;const s=$('#s_'+k);s.textContent='Uploading…';
+  try{const img=await shrink(el.files[0]);const r=await api('photo',{slot:k,img,oldId:D[k+'id']||''});if(!r.ok)throw r.error;
+    D[k]=r.name;D[k+'id']=r.id;const v=$('#v_'+k);v.src=img;v.hidden=false;s.textContent='Uploaded: '+r.name;count();dirty()}
+  catch(x){s.textContent='Upload failed: '+x+'. Try again.'}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&dirtyF)save(0,1)});
+$('#sv').onclick=()=>save(1);
+
+function lockUI(){document.querySelectorAll('#app input,#app textarea,#app select').forEach(el=>el.disabled=true);$('#bar').hidden=true}
+function banner(s){const b=$('#ban');b.textContent=s;b.hidden=false}
+$('#go').onclick=async()=>{
+  const name=$('#nm').value.trim().replace(/\s+/g,' '),email=$('#em').value.trim().toLowerCase(),g=$('#gr').value,er=$('#err'),go=$('#go');er.textContent='';
+  if(!name||!/^\S+@\S+\.\S+$/.test(email)||!g){er.textContent='Enter your name, a valid email and your group.';return}
+  me={name,email,g};go.disabled=true;go.textContent='Checking…';let msg='';
+  try{const r=await api('load');if(!r.ok){er.textContent=r.error;return}
+    if(r.found){D=r.data;locked=r.status==='submitted';msg=locked?'This work was already submitted. It is shown read-only.':'Welcome back. Your saved work is restored.'}
+    else D=localLoad()||{}
+  }catch(_){D=localLoad()||{};msg='Offline: using the copy saved on this device.'}
+  finally{go.disabled=false;go.textContent='Start or continue'}
+  D.side=D.side||SIDE[g];
+  $('#gate').hidden=true;$('#app').hidden=false;$('#who').textContent=`${name} · Group ${g}: ${CASES[g]}`;
+  build();cards();fill();show(0);if(msg)banner(msg);
+  if(locked)lockUI();else{$('#bar').hidden=false;save()}
+};
+
+function mail(){
+  let h=`<div style="font-family:Arial,sans-serif;max-width:680px;color:#14232e"><h2>Week 5: National Languages, Language Policy and Planning</h2><p><b>${E(me.name)}</b> (${E(me.email)})<br>Group ${me.g}: ${E(CASES[me.g])}<br>Submitted ${E(new Date().toLocaleString())}</p>`;
+  S.forEach(s=>{h+=`<h3 style="background:#0b5ea8;color:#fff;padding:6px 10px;margin:18px 0 6px">${E(s.t)}</h3>`;
+    s.f.forEach(q=>{if(q.t==='u'){h+=`<p style="margin:8px 0 2px"><b>${E(q.l)}</b></p>`+(D[q.k]?`<img src="cid:${q.k}" style="max-width:100%" alt="">`:'<p><i>(no photo)</i></p>');return}h+=`<p style="margin:8px 0 2px"><b>${E(q.l)}</b></p><p style="margin:0 0 6px;padding:6px;background:#f2f6f9;white-space:pre-wrap">${E(D[q.k])||'<i>(no answer)</i>'}</p>`+(q.key?`<p style="margin:0 0 6px;color:#1e7d4f;font-size:13px">Answer to confirm: ${E(q.key)}</p>`:'')})});
+  return h+'</div>'}
+$('#sub').onclick=()=>{const[n,t]=count();
+  $('#mt').textContent=`You answered ${n} of ${t} questions${n<t?' (parts meant for other groups, such as the panel scores, can stay empty)':''}. After you submit you cannot edit. A copy of your questions and answers will be emailed to ${me.email}.`;
+  $('#m').hidden=false;$('#no').focus()};
+$('#no').onclick=()=>$('#m').hidden=true;
+$('#yes').onclick=async()=>{const y=$('#yes');y.disabled=true;y.textContent='Sending…';
+  try{const r=await api('submit',{emailHtml:mail(),answered:count()[0]});if(!r.ok)throw r.error;
+    locked=true;lockUI();$('#m').hidden=true;stat('Submitted');localSave();
+    banner(r.mailed?`Submitted. A copy was emailed to ${me.email}.`:'Submitted and saved, but the email could not be sent. Tell your lecturer.');scrollTo(0,0)}
+  catch(x){$('#m').hidden=true;toast('Submit failed ('+x+'). Your work is still here. Try again.')}
+  y.disabled=false;y.textContent='Yes, submit'};
+</script>
+</body>
+</html>
